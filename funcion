@@ -1,0 +1,20 @@
+CREATE FUNCTION esLibroDisponible (@NRO_LIBRO INT) 
+
+RETURNS BIT
+AS
+BEGIN
+    DECLARE @libroDisponible BIT;
+
+    SELECT TOP 1 @libroDisponible = CASE WHEN NRO_COPIA IS NOT NULL THEN 1 ELSE 0 END
+    FROM COPIAS
+    WHERE NRO_LIBRO = @NRO_LIBRO AND ESTADO = 'N';
+
+    IF @libroDisponible IS NULL
+    BEGIN
+        SELECT TOP 1 @libroDisponible = CASE WHEN NRO_LIBRO IS NOT NULL THEN 1 ELSE 0 END
+        FROM LIBRO
+        WHERE NRO_LIBRO = @NRO_LIBRO AND ESTADO = 'N';
+   END
+
+    RETURN @libroDisponible;
+END
